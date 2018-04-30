@@ -49,6 +49,8 @@ func input(r io.Reader) <-chan string {
 // Run invokes the CLI with the given arguments.
 func (c *CLI) Run(args []string) int {
 	ch := input(os.Stdin)
+	var okCount int
+
 	for _, word := range words {
 		fmt.Println(word)
 		fmt.Print(">")
@@ -56,6 +58,7 @@ func (c *CLI) Run(args []string) int {
 		if v, ok := <-ch; ok {
 			if word == v {
 				fmt.Println("ok")
+				okCount++
 			} else {
 				fmt.Println("ng")
 			}
@@ -63,6 +66,8 @@ func (c *CLI) Run(args []string) int {
 			break
 		}
 	}
+
+	fmt.Fprintln(c.outStream, okCount)
 
 	return ExitCodeOK
 }
