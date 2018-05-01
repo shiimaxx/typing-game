@@ -17,19 +17,6 @@ const (
 	ExitCodeError int = 1 + iota
 )
 
-var words = []string{
-	"wash",
-	"ill",
-	"ten",
-	"boil",
-	"dynamic",
-	"smiling",
-	"play",
-	"insidious",
-	"reduce",
-	"preserve",
-}
-
 // CLI is the command line object
 type CLI struct {
 	// outStream and errStream are the stdout and stderr
