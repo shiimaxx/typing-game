@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/Pallinder/go-randomdata"
 )
@@ -14,6 +16,19 @@ const (
 	ExitCodeOK    int = 0
 	ExitCodeError int = 1 + iota
 )
+
+var words = []string{
+	"wash",
+	"ill",
+	"ten",
+	"boil",
+	"dynamic",
+	"smiling",
+	"play",
+	"insidious",
+	"reduce",
+	"preserve",
+}
 
 // CLI is the command line object
 type CLI struct {
@@ -37,26 +52,48 @@ func input(r io.Reader) <-chan string {
 
 // Run invokes the CLI with the given arguments.
 func (c *CLI) Run(args []string) int {
+	var timeout int
+	flags := flag.NewFlagSet(Name, flag.ContinueOnError)
+	flags.SetOutput(c.outStream)
+	flags.IntVar(&timeout, "timeout", 60, "timeout")
+	flags.IntVar(&timeout, "t", 60, "timeout(Short)")
+
+	if err := flags.Parse(args[1:]); err != nil {
+		return ExitCodeError
+	}
+
 	ch := input(os.Stdin)
 	var okCount int
 
+	timeoutCh := make(chan struct{})
+	go func() {
+		time.Sleep(time.Duration(timeout) * time.Second)
+		timeoutCh <- struct{}{}
+	}()
+
+QUESTION_LOOP:
 	for {
 		word := randomdata.Adjective()
 		fmt.Println(word)
 		fmt.Print(">")
 
-		if v, ok := <-ch; ok {
-			if word == v {
-				fmt.Println("ok")
-				okCount++
+		select {
+		case v, ok := <-ch:
+			if ok {
+				if word == v {
+					fmt.Println("ok")
+					okCount++
+				} else {
+					fmt.Println("ng")
+				}
 			} else {
-				fmt.Println("ng")
+				break QUESTION_LOOP
 			}
-		} else {
-			break
+		case <-timeoutCh:
+			fmt.Println("Timeup")
+			break QUESTION_LOOP
 		}
 	}
-
 	fmt.Fprintln(c.outStream, okCount)
 
 	return ExitCodeOK
