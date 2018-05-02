@@ -58,17 +58,17 @@ func (c *CLI) Run(args []string) int {
 		timeoutCh <- struct{}{}
 	}()
 
+	count := 1
 QUESTION_LOOP:
-	for {
+	for ; ; count++ {
 		word := randomdata.Adjective()
-		fmt.Println(word)
-		fmt.Print(">")
+		fmt.Printf("question %d: %s\n", count, word)
+		fmt.Print("> ")
 
 		select {
 		case v, ok := <-ch:
 			if ok {
 				if word == v {
-					fmt.Println("ok")
 					okCount++
 				} else {
 					fmt.Println("ng")
@@ -77,11 +77,11 @@ QUESTION_LOOP:
 				break QUESTION_LOOP
 			}
 		case <-timeoutCh:
-			fmt.Println("Timeup")
+			fmt.Print("Timeup\n\n")
 			break QUESTION_LOOP
 		}
 	}
-	fmt.Fprintln(c.outStream, okCount)
+	fmt.Fprintf(c.outStream, "result: %d/%d\n", okCount, count)
 
 	return ExitCodeOK
 }
