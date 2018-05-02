@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"io"
@@ -21,19 +20,6 @@ type CLI struct {
 	// outStream and errStream are the stdout and stderr
 	// to write message from the CLI.
 	outStream, errStream io.Writer
-}
-
-func input(r io.Reader) <-chan string {
-	ch := make(chan string)
-
-	go func() {
-		s := bufio.NewScanner(r)
-		for s.Scan() {
-			ch <- s.Text()
-		}
-		close(ch)
-	}()
-	return ch
 }
 
 // Run invokes the CLI with the given arguments.
