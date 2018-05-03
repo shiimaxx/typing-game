@@ -45,11 +45,11 @@ func (g *Game) Run() (int, int) {
 	ch := input(os.Stdin)
 	var okCount int
 
-	questionCount := 1
+	questionCount := 0
 QUESTION_LOOP:
 	for ; ; questionCount++ {
 		word := randomdata.Adjective()
-		fmt.Printf("question %d: %s\n", questionCount, word)
+		fmt.Printf("question %d: %s\n", questionCount+1, word)
 		fmt.Print("> ")
 
 		select {
