@@ -58,7 +58,7 @@ QUESTION_LOOP:
 				if word == v {
 					okCount++
 				} else {
-					fmt.Println("ng")
+					fmt.Println("miss")
 				}
 			} else {
 				break QUESTION_LOOP
