@@ -1,6 +1,6 @@
 # typing-game
 
-## Usabe
+## Usage
 
 ```
 typing-game [(-t |--timeout) timeout]
