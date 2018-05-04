@@ -10,8 +10,10 @@ import (
 	randomdata "github.com/Pallinder/go-randomdata"
 )
 
+// Game game settings
 type Game struct {
 	Timeout time.Duration
+	Words   []string
 }
 
 // NewGame constractor for Game
