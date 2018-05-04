@@ -36,7 +36,21 @@ func (c *CLI) Run(args []string) int {
 
 	g := game.NewGame(time.Duration(timeout))
 	questionCount, okCount := g.Run()
+	rate := int((float64(okCount) / float64(questionCount)) * 100)
+	var message string
+	switch {
+	case rate == 100:
+		message = "Excellent!!"
+	case rate >= 80:
+		message = "Great!"
+	case rate >= 60:
+		message = "Good"
+	case rate >= 50:
+		message = "Soso"
+	default:
+		message = "Bad"
+	}
 
-	fmt.Fprintf(c.outStream, "result: %d/%d\n", okCount, questionCount)
+	fmt.Fprintf(c.outStream, "result: %d/%d (rate: %d%%) %s\n", okCount, questionCount, rate, message)
 	return ExitCodeOK
 }
