@@ -20,7 +20,7 @@ type Game struct {
 func NewGame(timeout time.Duration) *Game {
 	g := new(Game)
 	g.Timeout = timeout
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 5; i++ {
 		g.Words = append(g.Words, randomdata.Adjective())
 	}
 	return g
@@ -48,9 +48,9 @@ func (g *Game) Run() (int, int) {
 	}()
 
 	ch := input(os.Stdin)
-	var okCount int
-
+	okCount := 0
 	questionCount := 0
+
 QUESTION_LOOP:
 	for _, word := range g.Words {
 		fmt.Printf("question %d: %s\n", questionCount+1, word)
@@ -69,7 +69,7 @@ QUESTION_LOOP:
 				break QUESTION_LOOP
 			}
 		case <-timeoutCh:
-			fmt.Print("Timeup\n\n")
+			fmt.Print("\nTimeup\n\n")
 			break QUESTION_LOOP
 		}
 	}
