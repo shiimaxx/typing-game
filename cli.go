@@ -24,14 +24,25 @@ type CLI struct {
 
 // Run invokes the CLI with the given arguments.
 func (c *CLI) Run(args []string) int {
-	var timeout int
+	var (
+		version bool
+		timeout int
+	)
+
 	flags := flag.NewFlagSet(Name, flag.ContinueOnError)
 	flags.SetOutput(c.outStream)
+
 	flags.IntVar(&timeout, "timeout", 60, "timeout")
 	flags.IntVar(&timeout, "t", 60, "timeout(Short)")
+	flags.BoolVar(&version, "version", false, "print version information")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		return ExitCodeError
+	}
+
+	if version {
+		fmt.Fprintf(c.errStream, "%s version %s\n", Name, Version)
+		return ExitCodeOK
 	}
 
 	g := game.NewGame(time.Duration(timeout))
