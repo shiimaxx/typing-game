@@ -12,15 +12,16 @@ import (
 
 // Game game settings
 type Game struct {
-	Timeout time.Duration
-	Words   []string
+	Timeout        time.Duration
+	Words          []string
+	NumOfQuestions int
 }
 
 // NewGame constractor for Game
-func NewGame(timeout time.Duration) *Game {
+func NewGame(timeout time.Duration, numOfQuestions int) *Game {
 	g := new(Game)
 	g.Timeout = timeout
-	for i := 0; i < 5; i++ {
+	for i := 0; i < numOfQuestions; i++ {
 		g.Words = append(g.Words, randomdata.Adjective())
 	}
 	return g
