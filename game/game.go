@@ -20,6 +20,9 @@ type Game struct {
 func NewGame(timeout time.Duration) *Game {
 	g := new(Game)
 	g.Timeout = timeout
+	for i := 0; i < 100; i++ {
+		g.Words = append(g.Words, randomdata.Adjective())
+	}
 	return g
 }
 
@@ -49,8 +52,7 @@ func (g *Game) Run() (int, int) {
 
 	questionCount := 0
 QUESTION_LOOP:
-	for ; ; questionCount++ {
-		word := randomdata.Adjective()
+	for _, word := range g.Words {
 		fmt.Printf("question %d: %s\n", questionCount+1, word)
 		fmt.Print("> ")
 
@@ -62,6 +64,7 @@ QUESTION_LOOP:
 				} else {
 					fmt.Println("miss")
 				}
+				questionCount++
 			} else {
 				break QUESTION_LOOP
 			}
