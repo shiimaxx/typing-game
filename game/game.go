@@ -44,7 +44,7 @@ func input(r io.Reader) <-chan string {
 func (g *Game) Run() (int, int) {
 	timeoutCh := make(chan struct{})
 	go func() {
-		time.Sleep(time.Duration(g.Timeout) * time.Second)
+		<-time.After(time.Duration(g.Timeout) * time.Second)
 		timeoutCh <- struct{}{}
 	}()
 
