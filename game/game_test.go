@@ -37,5 +37,30 @@ func TestNewGame(t *testing.T) {
 }
 
 func TestRun(t *testing.T) {
+	var cases = []struct {
+		name           string
+		timeout        time.Duration
+		numOfQuestions int
+		actual         Result
+	}{
+		{
+			name:           "default",
+			timeout:        time.Duration(60),
+			numOfQuestions: 100,
+			actual:         Result{questionCount: 0, okCount: 0},
+		},
+	}
 
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			game := NewGame(c.timeout, c.numOfQuestions)
+			questionCount, okCount := game.Run()
+			if questionCount != c.actual.questionCount {
+				t.Errorf("expected %d to eq %d", questionCount, c.actual.questionCount)
+			}
+			if okCount != c.actual.okCount {
+				t.Errorf("expected %d to eq %d", okCount, c.actual.okCount)
+			}
+		})
+	}
 }
