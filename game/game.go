@@ -13,9 +13,8 @@ import (
 
 // Game game settings
 type Game struct {
-	Timeout        time.Duration
-	Words          []string
-	NumOfQuestions int
+	Timeout time.Duration
+	Words   []string
 }
 
 // Result game result
