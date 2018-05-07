@@ -2,6 +2,7 @@ package game
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -15,6 +16,12 @@ type Game struct {
 	Timeout        time.Duration
 	Words          []string
 	NumOfQuestions int
+}
+
+// Result game result
+type Result struct {
+	questionCount int
+	okCount       int
 }
 
 // NewGame constractor for Game
@@ -40,20 +47,13 @@ func input(r io.Reader) <-chan string {
 	return ch
 }
 
-// Run run game
-func (g *Game) Run() (int, int) {
-	timeoutCh := make(chan struct{})
-	go func() {
-		<-time.After(time.Duration(g.Timeout) * time.Second)
-		timeoutCh <- struct{}{}
-	}()
-
+func question(ctx context.Context, words []string, resultCh chan Result) {
 	ch := input(os.Stdin)
-	okCount := 0
-	questionCount := 0
 
+	questionCount := 0
+	okCount := 0
 QUESTION_LOOP:
-	for _, word := range g.Words {
+	for _, word := range words {
 		fmt.Printf("question %d: %s\n", questionCount+1, word)
 		fmt.Print("> ")
 
@@ -69,10 +69,28 @@ QUESTION_LOOP:
 			} else {
 				break QUESTION_LOOP
 			}
-		case <-timeoutCh:
+		case <-ctx.Done():
 			fmt.Print("\nTimeup\n\n")
 			break QUESTION_LOOP
 		}
 	}
-	return questionCount, okCount
+	result := Result{
+		questionCount: questionCount,
+		okCount:       okCount,
+	}
+	resultCh <- result
+}
+
+// Run run game
+func (g *Game) Run() (int, int) {
+	ctx, cancel := context.WithTimeout(context.Background(), g.Timeout*time.Second)
+	defer cancel()
+
+	resultCh := make(chan Result)
+	go func() {
+		question(ctx, g.Words, resultCh)
+	}()
+	result := <-resultCh
+
+	return result.questionCount, result.okCount
 }
